@@ -7,6 +7,8 @@ import Dashboard from "./pages/Dashboard";
 import CreateRide from "./pages/CreateRide";
 import SearchRide from "./pages/SearchRide";
 import DriverRequests from "./pages/DriverRequests";
+import DayScholarDashboard from "./pages/DayScholarDashboard";
+import HostellerDashboard from "./pages/HostellerDashboard";
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
             <Route path="/create" element={<CreateRide />} />
             <Route path="/search" element={<SearchRide />} />
             <Route path="/requests" element={<DriverRequests />} />
+            <Route path="/dayscholar" element={<DayScholarDashboard />} />
+            <Route path="/hosteller" element={<HostellerDashboard />} />
           </Routes>
         </main>
       </div>
