@@ -4,9 +4,8 @@ exports.createRide = async (req, res) => {
     try {
         const ride = await Ride.create({
             ...req.body,
-            driver: req.user
+            driver: req.user // Associates the logged-in user as the driver
         });
-
         res.status(201).json(ride);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -15,15 +14,15 @@ exports.createRide = async (req, res) => {
 
 exports.getRidesByArea = async (req, res) => {
     try {
-        const { area,type } = req.query;
+        const { area } = req.query;
 
+        // Using regex to make searching 'tambaram' find 'Tambaram'
         const rides = await Ride.find({
-            routeAreas: area,
+            routeAreas: { $regex: new RegExp(area, 'i') }, 
             seatsAvailable: { $gt: 0 }
-        }).populate("driver", "name email");
+        }).populate("driver", "name email"); // Fetches driver name/email from User model
 
         res.json(rides);
-
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

@@ -17,9 +17,12 @@ function Navbar() {
       >
         Campus RideShare
       </h1>
-
+    
       {token && (
         <div className="space-x-4">
+          <Link to="/dashboard" className="hover:text-indigo-200 transition-colors font-medium">
+            Home
+          </Link>
           <Link to="/create" className="hover:text-gray-200">
             Create Ride
           </Link>

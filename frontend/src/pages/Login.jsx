@@ -15,7 +15,7 @@ function Login() {
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
-      toast.error("Error logging in");
+      toast.error("Wrong password,try again!");
     }
   };
 

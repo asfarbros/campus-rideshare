@@ -23,7 +23,7 @@ function CreateRide() {
       !form.time ||
       !form.seatsAvailable
     ) {
-      toast.error("Dhayavu senju ellam details um fill pannunga");
+      toast.error("Please fill all details");
       return;
     }
 
