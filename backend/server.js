@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const rideRoutes = require("./routes/rideRoutes");
+const locationRoutes = require("./routes/locationRoutes");
 dotenv.config();
 
 const app = express();
@@ -14,6 +15,7 @@ app.use("/api/requests", require("./routes/requestRoutes"));
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/rides", rideRoutes);
+app.use("/api/locations", locationRoutes);
 
 app.get("/test", (req, res) => {
     res.json({ message: "Server + MongoDB working" });
