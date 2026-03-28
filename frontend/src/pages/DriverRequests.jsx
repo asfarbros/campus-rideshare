@@ -56,8 +56,16 @@ function DriverRequests() {
               className="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4 transition-all hover:shadow-md"
             >
               <div className="flex-1 w-full text-center md:text-left">
-                <p className="text-xl font-semibold text-gray-800 mb-2">
-                  Passenger: {r.passenger.name}
+                <div className="flex flex-col gap-1 mb-3 bg-white p-3 rounded-lg shadow-sm border border-gray-100">
+                  <p className="font-bold text-gray-800 capitalize text-lg">
+                    {r.ride.from} <span className="text-indigo-500 mx-1">→</span> {r.ride.to}
+                  </p>
+                  <p className="text-sm text-gray-600 font-medium">
+                    📅 {r.ride.date} &nbsp;|&nbsp; ⏰ {r.ride.time}
+                  </p>
+                </div>
+                <p className="text-lg font-semibold text-gray-800 mb-2 flex items-center justify-center md:justify-start gap-2">
+                  👤 Passenger: <span className="text-indigo-600">{r.passenger.name}</span>
                 </p>
                 <div className="flex items-center justify-center md:justify-start gap-2 mt-2">
                   <span className="text-sm text-gray-500 font-medium">

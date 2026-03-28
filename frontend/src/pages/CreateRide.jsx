@@ -198,8 +198,8 @@ function CreateRide() {
           />
 
           <input
+            type="time"
             className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            placeholder="Time (e.g., 08:30 AM)"
             onChange={(e) => setForm({ ...form, time: e.target.value })}
           />
         </div>

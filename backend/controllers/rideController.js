@@ -1,4 +1,5 @@
 const Ride = require("../models/Ride");
+const RideRequest = require("../models/RideRequest");
 
 exports.createRide = async (req, res) => {
     try {
@@ -30,8 +31,29 @@ exports.getRidesByArea = async (req, res) => {
 
 exports.getMyPostedRides = async (req, res) => {
     try {
-        const rides = await Ride.find({ driver: req.user }).sort({ createdAt: -1 });
-        res.json(rides);
+        const rides = await Ride.find({ driver: req.user }).lean().sort({ createdAt: -1 });
+        
+        const rideIds = rides.map(r => r._id);
+        const acceptedRequests = await RideRequest.find({
+            ride: { $in: rideIds },
+            status: "accepted"
+        }).populate("passenger", "name email").lean();
+
+        const requestsByRide = {};
+        for (const reqObj of acceptedRequests) {
+            const rideStrId = reqObj.ride.toString();
+            if (!requestsByRide[rideStrId]) {
+                requestsByRide[rideStrId] = [];
+            }
+            requestsByRide[rideStrId].push(reqObj.passenger);
+        }
+
+        const ridesWithPassengers = rides.map(ride => ({
+            ...ride,
+            acceptedPassengers: requestsByRide[ride._id.toString()] || []
+        }));
+
+        res.json(ridesWithPassengers);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

@@ -5,6 +5,15 @@ import API from "../services/api";
 function MyPostedRides() {
   const [rides, setRides] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filterType, setFilterType] = useState("upcoming");
+
+  const isUpcoming = (dateStr, timeStr) => {
+    const rideDate = new Date(`${dateStr} ${timeStr}`);
+    if (isNaN(rideDate.getTime())) {
+      return new Date(dateStr).getTime() + 86400000 > Date.now();
+    }
+    return rideDate.getTime() > Date.now();
+  };
 
   useEffect(() => {
     fetchMyPostedRides();
@@ -34,14 +43,46 @@ function MyPostedRides() {
     <div className="max-w-4xl mx-auto p-6 mt-8">
       <h2 className="text-3xl font-extrabold mb-6 text-gray-800 border-b pb-4">My Posted Rides</h2>
 
+      <div className="flex gap-4 mb-8 bg-gray-100 p-1 rounded-xl shadow-inner w-fit">
+        <button
+          onClick={() => setFilterType("upcoming")}
+          className={`px-6 py-2 rounded-lg font-bold transition-all ${
+            filterType === "upcoming" ? "bg-white text-indigo-600 shadow" : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          Upcoming Rides
+        </button>
+        <button
+          onClick={() => setFilterType("finished")}
+          className={`px-6 py-2 rounded-lg font-bold transition-all ${
+            filterType === "finished" ? "bg-white text-indigo-600 shadow" : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          Finished Rides
+        </button>
+      </div>
+
       {rides.length === 0 ? (
         <div className="bg-white p-8 rounded-2xl shadow-md text-center border border-gray-100">
           <p className="text-gray-500 text-lg">You haven't posted any rides yet.</p>
         </div>
-      ) : (
-        <div className="grid md:grid-cols-2 gap-6">
-          {rides.map((r) => (
-            <div key={r._id} className="bg-white shadow-lg p-6 rounded-2xl border border-gray-100 flex flex-col gap-4 transition-transform hover:-translate-y-1">
+      ) : (() => {
+        const filteredRides = rides.filter(r => 
+          filterType === "upcoming" ? isUpcoming(r.date, r.time) : !isUpcoming(r.date, r.time)
+        );
+
+        if (filteredRides.length === 0) {
+          return (
+            <div className="bg-white p-8 rounded-2xl shadow-md text-center border border-gray-100">
+              <p className="text-gray-500 text-lg">No {filterType} rides found.</p>
+            </div>
+          );
+        }
+
+        return (
+          <div className="grid md:grid-cols-2 gap-6">
+            {filteredRides.map((r) => (
+              <div key={r._id} className="bg-white shadow-lg p-6 rounded-2xl border border-gray-100 flex flex-col gap-4 transform transition hover:-translate-y-1">
               
               <div className="flex justify-between items-center border-b border-gray-50 pb-2">
                 <span className="text-xs font-semibold text-gray-400">
@@ -73,11 +114,25 @@ function MyPostedRides() {
                   <span className="font-medium">{r.time}</span>
                 </div>
               </div>
+              {/* Passengers Section */}
+              {r.acceptedPassengers && r.acceptedPassengers.length > 0 && (
+                <div className="mt-2 pt-3 border-t border-gray-100">
+                  <span className="text-xs uppercase font-bold text-gray-400 mb-2 block">Accepted Passengers</span>
+                  <div className="flex flex-wrap gap-2">
+                    {r.acceptedPassengers.map((p, idx) => (
+                       <span key={idx} className="bg-indigo-50 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full border border-indigo-100">
+                         👤 {p.name}
+                       </span>
+                    ))}
+                  </div>
+                </div>
+              )}
 
             </div>
           ))}
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }

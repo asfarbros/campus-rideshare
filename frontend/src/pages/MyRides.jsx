@@ -5,6 +5,15 @@ import API from "../services/api";
 function MyRides() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filterType, setFilterType] = useState("upcoming");
+
+  const isUpcoming = (dateStr, timeStr) => {
+    const rideDate = new Date(`${dateStr} ${timeStr}`);
+    if (isNaN(rideDate.getTime())) {
+      return new Date(dateStr).getTime() + 86400000 > Date.now();
+    }
+    return rideDate.getTime() > Date.now();
+  };
 
   useEffect(() => {
     fetchMyRequests();
@@ -34,14 +43,47 @@ function MyRides() {
     <div className="max-w-4xl mx-auto p-6 mt-8">
       <h2 className="text-3xl font-extrabold mb-6 text-gray-800 border-b pb-4">My Rides</h2>
 
+      <div className="flex gap-4 mb-8 bg-gray-100 p-1 rounded-xl shadow-inner w-fit">
+        <button
+          onClick={() => setFilterType("upcoming")}
+          className={`px-6 py-2 rounded-lg font-bold transition-all ${
+            filterType === "upcoming" ? "bg-white text-indigo-600 shadow" : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          Upcoming Rides
+        </button>
+        <button
+          onClick={() => setFilterType("finished")}
+          className={`px-6 py-2 rounded-lg font-bold transition-all ${
+            filterType === "finished" ? "bg-white text-indigo-600 shadow" : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          Finished Rides
+        </button>
+      </div>
+
       {requests.length === 0 ? (
         <div className="bg-white p-8 rounded-2xl shadow-md text-center border border-gray-100">
           <p className="text-gray-500 text-lg">You haven't requested any rides yet.</p>
         </div>
-      ) : (
-        <div className="grid md:grid-cols-2 gap-6">
-          {requests.map((req) => (
-            <div key={req._id} className="bg-white shadow-lg p-6 rounded-2xl border border-gray-100 flex flex-col gap-4 transition-transform hover:-translate-y-1">
+      ) : (() => {
+        const filteredRequests = requests.filter(req => {
+          if (!req.ride) return false;
+          return filterType === "upcoming" ? isUpcoming(req.ride.date, req.ride.time) : !isUpcoming(req.ride.date, req.ride.time);
+        });
+
+        if (filteredRequests.length === 0) {
+          return (
+            <div className="bg-white p-8 rounded-2xl shadow-md text-center border border-gray-100">
+              <p className="text-gray-500 text-lg">No {filterType} rides found.</p>
+            </div>
+          );
+        }
+
+        return (
+          <div className="grid md:grid-cols-2 gap-6">
+            {filteredRequests.map((req) => (
+              <div key={req._id} className="bg-white shadow-lg p-6 rounded-2xl border border-gray-100 flex flex-col gap-4 transform transition hover:-translate-y-1">
               
               <div className="flex justify-between items-center border-b border-gray-50 pb-2">
                 <div className="flex flex-col">
@@ -90,7 +132,8 @@ function MyRides() {
             </div>
           ))}
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
