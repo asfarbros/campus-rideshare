@@ -39,6 +39,12 @@ function Navbar() {
           <Link to="/requests" className="hover:text-gray-200">
             Requests
           </Link>
+          <Link to="/my-rides" className="hover:text-gray-200">
+            My Rides
+          </Link>
+          <Link to="/my-posted-rides" className="hover:text-gray-200">
+            Posted Rides
+          </Link>
           <button
             onClick={logout}
             className="bg-white text-indigo-600 px-3 py-1 rounded hover:bg-gray-100"

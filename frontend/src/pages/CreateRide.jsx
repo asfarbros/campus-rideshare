@@ -10,6 +10,7 @@ function CreateRide() {
     date: "",
     time: "",
     seatsAvailable: 1,
+    vehicleType: "car",
   });
 
   const [fromSuggestions, setFromSuggestions] = useState([]);
@@ -203,14 +204,45 @@ function CreateRide() {
           />
         </div>
 
-        {/* SEATS */}
-        <input
-          type="number"
-          min="1"
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          placeholder="Seats Available"
-          onChange={(e) => setForm({ ...form, seatsAvailable: e.target.value })}
-        />
+        {/* VEHICLE TYPE & SEATS */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1 flex items-center justify-between px-4 py-3 rounded-lg border border-gray-300 bg-white">
+             <span className="text-gray-600 font-medium">Vehicle Type:</span>
+             <div className="flex gap-4">
+               <label className="flex items-center gap-2 cursor-pointer">
+                 <input
+                   type="radio"
+                   name="vehicleType"
+                   value="car"
+                   checked={form.vehicleType === "car"}
+                   onChange={(e) => setForm({ ...form, vehicleType: e.target.value })}
+                   className="w-4 h-4 text-indigo-600 focus:ring-indigo-500"
+                 />
+                 <span className="text-gray-800">Car 🚗</span>
+               </label>
+               <label className="flex items-center gap-2 cursor-pointer">
+                 <input
+                   type="radio"
+                   name="vehicleType"
+                   value="bike"
+                   checked={form.vehicleType === "bike"}
+                   onChange={(e) => setForm({ ...form, vehicleType: e.target.value })}
+                   className="w-4 h-4 text-indigo-600 focus:ring-indigo-500"
+                 />
+                 <span className="text-gray-800">Bike 🏍️</span>
+               </label>
+             </div>
+          </div>
+
+          <input
+            type="number"
+            min="1"
+            className="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="Seats Available"
+            value={form.seatsAvailable}
+            onChange={(e) => setForm({ ...form, seatsAvailable: e.target.value })}
+          />
+        </div>
 
         {/* BUTTON */}
         <button

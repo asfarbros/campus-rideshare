@@ -98,3 +98,22 @@ exports.updateRequestStatus = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+// Passenger views their requested rides
+exports.getMyRides = async (req, res) => {
+    try {
+        const requests = await RideRequest.find({ passenger: req.user })
+            .populate({
+                path: "ride",
+                populate: {
+                    path: "driver",
+                    select: "name email"
+                }
+            })
+            .sort({ createdAt: -1 });
+
+        res.json(requests);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};

@@ -27,3 +27,12 @@ exports.getRidesByArea = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+exports.getMyPostedRides = async (req, res) => {
+    try {
+        const rides = await Ride.find({ driver: req.user }).sort({ createdAt: -1 });
+        res.json(rides);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import toast from "react-hot-toast";
 import API from "../services/api";
 
@@ -6,12 +6,25 @@ function SearchRide() {
   const [area, setArea] = useState("");
   const [rides, setRides] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const timeoutRef = useRef(null);
 
-  const commonAreas = ["Tambaram", "Padur", "Sholinganallur", "SSN College", "Kelambakkam", "Navalur", "Siruseri"];
-
-  const filteredSuggestions = commonAreas.filter((item) =>
-    item.toLowerCase().includes(area.toLowerCase())
-  );
+  const fetchLocations = async (query) => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    
+    timeoutRef.current = setTimeout(async () => {
+      if (query.length < 1) {
+        setSuggestions([]);
+        return;
+      }
+      try {
+        const res = await API.get(`/locations?search=${query}`);
+        setSuggestions(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    }, 300);
+  };
 
   const search = async () => {
     if (!area) {
@@ -50,6 +63,7 @@ function SearchRide() {
   const handleSelect = (selectedArea) => {
     setArea(selectedArea);
     setShowSuggestions(false);
+    setSuggestions([]);
   };
 
   return (
@@ -62,22 +76,24 @@ function SearchRide() {
           value={area}
           onFocus={() => setShowSuggestions(true)}
           onChange={(e) => {
-            setArea(e.target.value);
+            const val = e.target.value;
+            setArea(val);
             setShowSuggestions(true);
+            fetchLocations(val);
           }}
           className="flex-1 border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 text-gray-700"
         />
 
         {showSuggestions && area && (
           <div className="absolute top-full left-0 w-[calc(100%-125px)] bg-white border border-gray-200 rounded-xl mt-1 shadow-2xl z-50 overflow-hidden">
-            {filteredSuggestions.length > 0 ? (
-              filteredSuggestions.map((suggestion, index) => (
+            {suggestions.length > 0 ? (
+              suggestions.map((suggestion) => (
                 <div
-                  key={index}
-                  onClick={() => handleSelect(suggestion)}
+                  key={suggestion._id}
+                  onClick={() => handleSelect(suggestion.name)}
                   className="px-4 py-3 hover:bg-indigo-50 cursor-pointer text-gray-700 border-b border-gray-50 last:border-b-0 transition-colors"
                 >
-                  {suggestion}
+                  {suggestion.name}
                 </div>
               ))
             ) : (
@@ -103,9 +119,14 @@ function SearchRide() {
                    👤 {r.driver?.name || "Member"}
                 </span>
               </div>
-              <span className="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full">
-                {r.seatsAvailable} Seats
-              </span>
+              <div className="flex gap-2">
+                <span className="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full capitalize">
+                  {r.vehicleType === 'bike' ? '🏍️ Bike' : '🚗 Car'}
+                </span>
+                <span className="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full">
+                  {r.seatsAvailable} Seats
+                </span>
+              </div>
             </div>
 
             <div className="flex justify-between items-start">

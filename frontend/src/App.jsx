@@ -11,6 +11,8 @@ import DriverRequests from "./pages/DriverRequests";
 import DayScholarDashboard from "./pages/DayScholarDashboard";
 import HostellerDashboard from "./pages/HostellerDashboard";
 import SyncClerk from "./pages/SyncClerk";
+import MyRides from "./pages/MyRides";
+import MyPostedRides from "./pages/MyPostedRides";
 
 function App() {
   return (
@@ -34,6 +36,8 @@ function App() {
             <Route path="/create" element={<CreateRide />} />
             <Route path="/search" element={<SearchRide />} />
             <Route path="/requests" element={<DriverRequests />} />
+            <Route path="/my-rides" element={<MyRides />} />
+            <Route path="/my-posted-rides" element={<MyPostedRides />} />
             <Route path="/dayscholar" element={<DayScholarDashboard />} />
             <Route path="/hosteller" element={<HostellerDashboard />} />
           </Routes>

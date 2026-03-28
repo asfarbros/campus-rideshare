@@ -11,7 +11,13 @@ const rideSchema = new mongoose.Schema({
     routeAreas: [String],
     date: String,
     time: String,
-    seatsAvailable: Number
+    seatsAvailable: Number,
+    vehicleType: {
+        type: String,
+        enum: ["car", "bike"],
+        required: true,
+        default: "car"
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model("Ride", rideSchema);
