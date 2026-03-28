@@ -1,11 +1,18 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useClerk } from "@clerk/clerk-react";
 
 function Navbar() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const { signOut } = useClerk();
 
-  const logout = () => {
+  const logout = async () => {
     localStorage.removeItem("token");
+    try {
+       await signOut();
+    } catch (e) {
+       console.log("Already signed out of Clerk");
+    }
     navigate("/");
   };
 

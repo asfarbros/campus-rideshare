@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { AuthenticateWithRedirectCallback } from "@clerk/clerk-react";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -9,6 +10,7 @@ import SearchRide from "./pages/SearchRide";
 import DriverRequests from "./pages/DriverRequests";
 import DayScholarDashboard from "./pages/DayScholarDashboard";
 import HostellerDashboard from "./pages/HostellerDashboard";
+import SyncClerk from "./pages/SyncClerk";
 
 function App() {
   return (
@@ -20,6 +22,14 @@ function App() {
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/sso-callback" element={
+              <AuthenticateWithRedirectCallback 
+                signInFallbackRedirectUrl="/sync-clerk"
+                signUpFallbackRedirectUrl="/sync-clerk"
+                forceRedirectUrl="/sync-clerk"
+              />
+            } />
+            <Route path="/sync-clerk" element={<SyncClerk />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/create" element={<CreateRide />} />
             <Route path="/search" element={<SearchRide />} />
