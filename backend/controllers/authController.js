@@ -44,6 +44,14 @@ exports.login = async (req, res) => {
             { expiresIn: "7d" }
         );
 
+        // Non-blocking email alert
+        resend.emails.send({
+            from: "onboarding@resend.dev",
+            to: email,
+            subject: "Login Alert - Campus Rideshare",
+            html: `<h1>Hello!</h1><p>You have successfully signed in to your Campus Rideshare account.</p>`
+        }).catch(err => console.error("Resend Error on Login:", err));
+
         res.json({ token });
 
     } catch (err) {
