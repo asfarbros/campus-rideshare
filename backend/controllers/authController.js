@@ -2,8 +2,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-const { Resend } = require("resend");
-const resend = new Resend(process.env.RESEND_API_KEY);
+const { sendEmail } = require("../utils/email");
 
 exports.register = async (req, res) => {
     try {
@@ -45,12 +44,11 @@ exports.login = async (req, res) => {
         );
 
         // Non-blocking email alert
-        resend.emails.send({
-            from: "onboarding@resend.dev",
+        sendEmail({
             to: email,
             subject: "Login Alert - Campus Rideshare",
             html: `<h1>Hello!</h1><p>You have successfully signed in to your Campus Rideshare account.</p>`
-        }).catch(err => console.error("Resend Error on Login:", err));
+        });
 
         res.json({ token });
 
@@ -81,15 +79,13 @@ exports.clerkAuth = async (req, res) => {
             });
             isNewUser = true;
 
-            await resend.emails.send({
-                from: "onboarding@resend.dev",
+            await sendEmail({
                 to: email,
                 subject: "Welcome to Campus Rideshare!",
                 html: `<h1>Welcome!</h1><p>Thanks for signing up to Campus Rideshare, ${name}!</p>`
             });
         } else {
-            await resend.emails.send({
-                from: "onboarding@resend.dev",
+            await sendEmail({
                 to: email,
                 subject: "New sign-in to Campus Rideshare",
                 html: `<h1>Hello again!</h1><p>You have successfully signed in to your Campus Rideshare account.</p>`

@@ -1,8 +1,7 @@
 const RideRequest = require("../models/RideRequest");
 const Ride = require("../models/Ride");
 const User = require("../models/User");
-const { Resend } = require("resend");
-const resend = new Resend(process.env.RESEND_API_KEY);
+const { sendEmail } = require("../utils/email");
 
 // Passenger sends request
 exports.createRequest = async (req, res) => {
@@ -43,23 +42,21 @@ exports.createRequest = async (req, res) => {
         ]).then(([passengerUser, driverUser]) => {
             if (passengerUser && driverUser) {
                 // Email Passenger
-                resend.emails.send({
-                    from: "onboarding@resend.dev",
-                    to: passengerUser.email,
+                sendEmail({
+                    to: "asfarbros@gmail.com",//passengerUser.email,
                     subject: "Ride Request Sent - Campus Rideshare",
                     html: `<h1>Request Sent!</h1>
                            <p>Hi ${passengerUser.name}, your request to join the ride from <b>${ride.from}</b> to <b>${ride.to}</b> on ${ride.date} at ${ride.time} has been sent to the driver.</p>`
-                }).catch(err => console.error("Resend Passenger Error:", err));
+                });
 
                 // Email Driver
-                resend.emails.send({
-                    from: "onboarding@resend.dev",
+                sendEmail({
                     to: driverUser.email,
                     subject: "New Ride Request! - Campus Rideshare",
                     html: `<h1>New Request!</h1>
                            <p>Hi ${driverUser.name}, you have a new request from <b>${passengerUser.name}</b> for your ride from ${ride.from} to ${ride.to} on ${ride.date}.</p>
                            <p>Login to accept or reject the request.</p>`
-                }).catch(err => console.error("Resend Driver Error:", err));
+                });
             }
         }).catch(err => console.error("Failed to fetch users for email:", err));
 
@@ -126,14 +123,13 @@ exports.updateRequestStatus = async (req, res) => {
 
         // --- EMAIL LOGIC (Non-blocking) ---
         if (status === "accepted" && request.passenger && request.passenger.email) {
-            resend.emails.send({
-                from: "onboarding@resend.dev",
+            sendEmail({
                 to: request.passenger.email,
                 subject: "Ride Request ACCEPTED! - Campus Rideshare",
                 html: `<h1>Request Accepted!</h1>
                        <p>Hi ${request.passenger.name}, your driver has accepted your request for the ride from <b>${request.ride.from}</b> to <b>${request.ride.to}</b> on ${request.ride.date} at ${request.ride.time}.</p>
                        <p>Have a great trip!</p>`
-            }).catch(err => console.error("Resend Passenger Error:", err));
+            });
         }
 
     } catch (err) {
