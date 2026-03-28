@@ -1,8 +1,10 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 import toast from "react-hot-toast";
 
 function CreateRide() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     from: "",
     to: "",
@@ -68,7 +70,7 @@ function CreateRide() {
       });
 
       toast.success("Ride created successfully");
-      // Optional: reset form or redirect
+      navigate("/my-posted-rides");
     } catch (error) {
       console.error(error);
       toast.error("Error creating ride");

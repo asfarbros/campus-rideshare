@@ -43,7 +43,7 @@ exports.createRequest = async (req, res) => {
             if (passengerUser && driverUser) {
                 // Email Passenger
                 sendEmail({
-                    to: "asfarbros@gmail.com",//passengerUser.email,
+                    to: passengerUser.email,
                     subject: "Ride Request Sent - Campus Rideshare",
                     html: `<h1>Request Sent!</h1>
                            <p>Hi ${passengerUser.name}, your request to join the ride from <b>${ride.from}</b> to <b>${ride.to}</b> on ${ride.date} at ${ride.time} has been sent to the driver.</p>`
