@@ -1,8 +1,10 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import API from "../services/api";
 
 function SearchRide() {
+  const navigate = useNavigate();
   const [area, setArea] = useState("");
   const [rides, setRides] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -54,6 +56,7 @@ function SearchRide() {
     try {
       await API.post("/requests", { rideId });
       toast.success("Ride requested successfully!");
+      navigate("/my-rides");
     } catch (error) {
       console.error(error);
       toast.error("Failed to request ride");
