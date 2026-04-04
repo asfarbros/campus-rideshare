@@ -45,6 +45,9 @@ function Navbar() {
           <Link to="/my-posted-rides" className="hover:text-gray-200">
             Posted Rides
           </Link>
+          <Link to="/hosteller" className="hover:text-gray-200">
+            Companions
+          </Link>
           <button
             onClick={logout}
             className="bg-white text-indigo-600 px-3 py-1 rounded hover:bg-gray-100"

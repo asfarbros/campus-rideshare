@@ -10,6 +10,10 @@ import SearchRide from "./pages/SearchRide";
 import DriverRequests from "./pages/DriverRequests";
 import DayScholarDashboard from "./pages/DayScholarDashboard";
 import HostellerDashboard from "./pages/HostellerDashboard";
+import HostellerCreate from "./pages/HostellerCreate";
+import HostellerBrowse from "./pages/HostellerBrowse";
+import HostellerRequests from "./pages/HostellerRequests";
+import HostellerMyPosts from "./pages/HostellerMyPosts";
 import SyncClerk from "./pages/SyncClerk";
 import MyRides from "./pages/MyRides";
 import MyPostedRides from "./pages/MyPostedRides";
@@ -40,6 +44,10 @@ function App() {
             <Route path="/my-posted-rides" element={<MyPostedRides />} />
             <Route path="/dayscholar" element={<DayScholarDashboard />} />
             <Route path="/hosteller" element={<HostellerDashboard />} />
+            <Route path="/hosteller/create" element={<HostellerCreate />} />
+            <Route path="/hosteller/browse" element={<HostellerBrowse />} />
+            <Route path="/hosteller/requests" element={<HostellerRequests />} />
+            <Route path="/hosteller/my-posts" element={<HostellerMyPosts />} />
           </Routes>
         </main>
       </div>

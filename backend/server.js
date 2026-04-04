@@ -13,6 +13,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use("/api/requests", require("./routes/requestRoutes"));
+app.use("/api/hosteller", require("./routes/hostellerRoutes"));
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/rides", rideRoutes);
