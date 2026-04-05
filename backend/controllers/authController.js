@@ -8,9 +8,6 @@ exports.register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
-        if (!email.endsWith("@ssn.edu.in")) {
-            return res.status(400).json({ message: "Use college email only" });
-        }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -61,9 +58,6 @@ exports.clerkAuth = async (req, res) => {
     try {
         const { email, name } = req.body;
 
-        if (!email.endsWith("@ssn.edu.in")) {
-            return res.status(400).json({ message: "Use college email only" });
-        }
 
         let user = await User.findOne({ email });
         let isNewUser = false;

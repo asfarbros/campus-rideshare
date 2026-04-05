@@ -17,6 +17,7 @@ import HostellerMyPosts from "./pages/HostellerMyPosts";
 import SyncClerk from "./pages/SyncClerk";
 import MyRides from "./pages/MyRides";
 import MyPostedRides from "./pages/MyPostedRides";
+import MyProfile from "./pages/MyProfile";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
             <Route path="/requests" element={<DriverRequests />} />
             <Route path="/my-rides" element={<MyRides />} />
             <Route path="/my-posted-rides" element={<MyPostedRides />} />
+            <Route path="/profile" element={<MyProfile />} />
             <Route path="/dayscholar" element={<DayScholarDashboard />} />
             <Route path="/hosteller" element={<HostellerDashboard />} />
             <Route path="/hosteller/create" element={<HostellerCreate />} />
