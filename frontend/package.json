@@ -12,7 +12,11 @@
   "dependencies": {
     "@clerk/clerk-react": "^5.61.4",
     "axios": "^1.13.6",
+<<<<<<< HEAD
     "framer-motion": "^12.38.0",
+=======
+    "lucide-react": "^1.7.0",
+>>>>>>> 259b0b1f51fdc6ea902ee11b76afc3bf693a73dd
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hot-toast": "^2.6.0",
