@@ -19,8 +19,11 @@
                 subject: options.subject,
                 html: options.html,
             };
-            const info = await transporter.sendMail(mailOptions);
-            console.log("Email sent:", info.messageId);
+            // const info = await transporter.sendMail(mailOptions);
+            // console.log("Email sent:", info.messageId);
+            // ── TEMPORARILY DISABLED FOR DEBUGGING ───────────────────────────
+            console.log("Skipped sending email to prevent Render timeout.");
+            // ─────────────────────────────────────────────────────────────────
         } catch (error) {
             console.error("Error sending email with Nodemailer:", error);
         }
