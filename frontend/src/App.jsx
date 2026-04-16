@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AuthenticateWithRedirectCallback } from "@clerk/clerk-react";
 import Navbar from "./components/Navbar";
+import Chatbot from "./components/Chatbot";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
@@ -25,6 +26,7 @@ function App() {
       <div className="min-h-screen bg-gradient-to-r from-blue-200 via-indigo-300 to-purple-200 bg-[length:200%_200%] animate-gradient-x flex flex-col">
         <Toaster position="top-center" />
         <Navbar />
+        <Chatbot />
         <main className="flex-grow p-6 max-w-6xl mx-auto w-full">
           <Routes>
             <Route path="/" element={<Login />} />

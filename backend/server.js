@@ -7,6 +7,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const rideRoutes = require("./routes/rideRoutes");
 const locationRoutes = require("./routes/locationRoutes");
+const chatRoutes = require("./routes/chatRoutes");
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use("/api/hosteller", require("./routes/hostellerRoutes"));
 app.use("/api/auth", authRoutes);
 app.use("/api/rides", rideRoutes);
 app.use("/api/locations", locationRoutes);
+app.use("/api/chat", chatRoutes);
 
 app.get("/test", (req, res) => {
     res.json({ message: "Server + MongoDB working" });
