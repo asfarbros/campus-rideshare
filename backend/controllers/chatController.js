@@ -73,8 +73,14 @@ CRITICAL RULE: When users ask about "pickup locations", "boarding points", or th
                 timeoutId = setTimeout(() => reject(new Error("AI_SERVICE_TIMEOUT")), 15000);
             });
 
+            const aiPromise = chat.sendMessage(message);
+            // CRITICAL FIX: If AI times out (loses the race) but rejects later, 
+            // it will crash the entire Node.js server with an UnhandledPromiseRejection. 
+            // We MUST attach a background catch to prevent this!
+            aiPromise.catch(err => console.error("Background AI Error (ignored):", err.message));
+
             result = await Promise.race([
-                chat.sendMessage(message),
+                aiPromise,
                 timeoutPromise
             ]);
         } catch (apiError) {
