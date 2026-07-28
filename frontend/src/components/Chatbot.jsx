@@ -31,18 +31,19 @@ const Chatbot = () => {
         setIsLoading(true);
 
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/chat`, {
+            const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000/api';
+            const response = await axios.post(`${apiUrl}/chat`, {
                 message: userMessage.text,
                 history: messages
             });
             const botMessage = { text: response.data.response, sender: 'bot' };
             setMessages((prev) => [...prev, botMessage]);
         } catch (error) {
-            console.error("Chat Error Details:");
+            console.error("Chat API Fetch Error:", error);
             if (error.response) {
                 // The request was made and the server responded with a status code outside of the 2xx range
-                console.error("Data:", error.response.data);
-                console.error("Status:", error.response.status);
+                console.error("Response Status:", error.response.status);
+                console.error("Response Text/Data:", error.response.data);
             } else if (error.request) {
                 // The request was made but no response was received (network or CORS issue)
                 console.error("No response received. Request:", error.request);
