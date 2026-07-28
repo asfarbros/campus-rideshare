@@ -33,10 +33,10 @@ const Chatbot = () => {
         setIsLoading(true);
 
         try {
-            const apiUrl = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            const apiUrl = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000   ';
             const token = await getToken();
             
-            const response = await axios.post(`${apiUrl}/chat`, {
+            const response = await axios.post(`${apiUrl}/api/chat`, {
                 message: userMessage.text,
                 history: messages
             }, {
