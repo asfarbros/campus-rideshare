@@ -3,8 +3,10 @@ import { MessageCircle, X, Send, Loader2 } from 'lucide-react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useAuth } from '@clerk/clerk-react';
 
 const Chatbot = () => {
+    const { getToken } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
@@ -31,10 +33,16 @@ const Chatbot = () => {
         setIsLoading(true);
 
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000/api';
+            const apiUrl = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            const token = await getToken();
+            
             const response = await axios.post(`${apiUrl}/chat`, {
                 message: userMessage.text,
                 history: messages
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             });
             const botMessage = { text: response.data.response, sender: 'bot' };
             setMessages((prev) => [...prev, botMessage]);
