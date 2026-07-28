@@ -7,6 +7,7 @@ const Location = require("../models/Location");
 exports.handleChat = async (req, res) => {
     try {
         const { message, history } = req.body;
+        console.log("1. Chat route triggered. Message:", message);
         
         if (!message) {
             return res.status(400).json({ error: "Message is required" });
@@ -21,12 +22,14 @@ exports.handleChat = async (req, res) => {
         // Getting today's date in YYYY-MM-DD for string comparison
         const todayStr = new Date().toISOString().split("T")[0];
 
+        console.log("2. Querying MongoDB for rides...");
         // Fetch live context using Promise.all but apply limits and selection rules
         const [activeRides, pendingRequests, recentTravelPosts] = await Promise.all([
             Ride.find({ date: { $gte: todayStr } }).select("from to date time vehicleType seatsAvailable routeAreas").limit(15).lean(),
             RideRequest.find({ status: "pending" }).countDocuments(), // count instead of fetching all docs
             TravelPost.find({ travelDate: { $gte: todayStr } }).select("destination travelDate note").limit(15).lean(),
         ]);
+        console.log("3. DB query successful. Calling Gemini API...");
 
         const dbContext = {
             activeRides: activeRides.map(r => ({ 
@@ -99,6 +102,7 @@ CRITICAL RULE: When users ask about "pickup locations", "boarding points", or th
 
         return res.json({ response: responseText });
     } catch (error) {
+        console.error("X. Error occurred in chatController:", error);
         console.error("Chat API Error Details:");
         console.error("Message:", error.message);
         if (error.response) {
