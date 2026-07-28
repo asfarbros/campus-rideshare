@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Loader2 } from 'lucide-react';
 import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const Chatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -36,7 +38,19 @@ const Chatbot = () => {
             const botMessage = { text: response.data.response, sender: 'bot' };
             setMessages((prev) => [...prev, botMessage]);
         } catch (error) {
-            console.error("Chat error:", error);
+            console.error("Chat Error Details:");
+            if (error.response) {
+                // The request was made and the server responded with a status code outside of the 2xx range
+                console.error("Data:", error.response.data);
+                console.error("Status:", error.response.status);
+            } else if (error.request) {
+                // The request was made but no response was received (network or CORS issue)
+                console.error("No response received. Request:", error.request);
+                console.error("This is likely a Network or CORS error.");
+            } else {
+                // Something happened in setting up the request
+                console.error("Error setting up request:", error.message);
+            }
             setMessages((prev) => [...prev, { text: "Sorry, I'm having trouble connecting to the server.", sender: 'bot' }]);
         } finally {
             setIsLoading(false);
@@ -63,13 +77,44 @@ const Chatbot = () => {
                                 👋 Hi! I'm your Campus RideShare assistant. How can I help you today?
                             </div>
                         )}
-                        {messages.map((msg, idx) => (
-                            <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in-up`}>
-                                <div className={`max-w-[75%] p-3 rounded-2xl text-sm shadow-sm ${msg.sender === 'user' ? 'bg-indigo-600 text-white rounded-tr-sm' : 'bg-white text-gray-800 border border-gray-100 rounded-tl-sm'}`}>
-                                    {msg.text}
+                        {messages.map((msg, idx) => {
+                            // Extract JSON-escaped strings if present
+                            let displayText = msg.text;
+                            try {
+                                if (typeof displayText === 'string' && displayText.trim().startsWith('"') && displayText.trim().endsWith('"')) {
+                                    displayText = JSON.parse(displayText);
+                                }
+                            } catch (e) {
+                                // Ignore if not valid JSON
+                            }
+
+                            return (
+                                <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in-up`}>
+                                    <div className={`max-w-[85%] p-3 rounded-2xl text-sm shadow-sm ${msg.sender === 'user' ? 'bg-indigo-600 text-white rounded-tr-sm' : 'bg-white text-gray-800 border border-gray-100 rounded-tl-sm'}`}>
+                                        {msg.sender === 'bot' ? (
+                                            <ReactMarkdown 
+                                                remarkPlugins={[remarkGfm]}
+                                                components={{
+                                                    p: ({node, ...props}) => <p className="mb-2 last:mb-0 leading-relaxed" {...props} />,
+                                                    ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-2 space-y-1" {...props} />,
+                                                    ol: ({node, ...props}) => <ol className="list-decimal pl-5 mb-2 space-y-1" {...props} />,
+                                                    li: ({node, ...props}) => <li className="pl-1" {...props} />,
+                                                    strong: ({node, ...props}) => <strong className="font-bold text-gray-900" {...props} />,
+                                                    a: ({node, ...props}) => <a className="text-indigo-600 hover:underline font-medium" target="_blank" rel="noopener noreferrer" {...props} />,
+                                                    code: ({node, inline, ...props}) => inline 
+                                                        ? <code className="bg-gray-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono" {...props} />
+                                                        : <div className="bg-gray-800 text-gray-100 p-2 rounded-lg text-xs overflow-x-auto my-2 font-mono"><code {...props} /></div>
+                                                }}
+                                            >
+                                                {displayText}
+                                            </ReactMarkdown>
+                                        ) : (
+                                            <p className="whitespace-pre-wrap leading-relaxed">{displayText}</p>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                         {isLoading && (
                             <div className="flex justify-start">
                                 <div className="max-w-[75%] p-3 rounded-2xl text-sm bg-white text-gray-800 border border-gray-100 rounded-tl-sm flex items-center gap-2 shadow-sm">

@@ -23,13 +23,21 @@ exports.handleChat = async (req, res) => {
 
         // Fetch live context using Promise.all but apply limits and selection rules
         const [activeRides, pendingRequests, recentTravelPosts] = await Promise.all([
-            Ride.find({ date: { $gte: todayStr } }).select("from to date time vehicleType seatsAvailable").limit(15).lean(),
+            Ride.find({ date: { $gte: todayStr } }).select("from to date time vehicleType seatsAvailable routeAreas").limit(15).lean(),
             RideRequest.find({ status: "pending" }).countDocuments(), // count instead of fetching all docs
             TravelPost.find({ travelDate: { $gte: todayStr } }).select("destination travelDate note").limit(15).lean(),
         ]);
 
         const dbContext = {
-            activeRides: activeRides.map(r => ({ from: r.from, to: r.to, date: r.date, time: r.time, type: r.vehicleType, seats: r.seatsAvailable })),
+            activeRides: activeRides.map(r => ({ 
+                from: r.from, 
+                to: r.to, 
+                date: r.date, 
+                time: r.time, 
+                type: r.vehicleType, 
+                seats: r.seatsAvailable,
+                routeAreas: r.routeAreas 
+            })),
             pendingRequestsCount: pendingRequests,
             recentTravelPosts: recentTravelPosts.map(p => ({ to: p.destination, date: p.travelDate, text: p.note })),
             systemMessage: "Do not hallucinate rides. Only use the ones provided above."
@@ -37,10 +45,13 @@ exports.handleChat = async (req, res) => {
 
         const stringifiedContext = JSON.stringify(dbContext);
 
-        const systemInstruction = `You are the official AI assistant for Campus RideShare, an exclusive carpooling app for SSN College students. You are helpful, concise, and friendly. Help students find rides, understand hosteller plans, and navigate pickup locations. Here is the live, real-time database context of current app activity: ${stringifiedContext}. Use this data to answer user questions accurately. Keep answers relatively short.`;
+        const systemInstruction = `You are the official AI assistant for Campus RideShare, an exclusive carpooling app for SSN College students. You are helpful, concise, and friendly. Help students find rides, understand hosteller plans, and navigate pickup locations. 
+Here is the live, real-time database context of current app activity: ${stringifiedContext}. 
+Use this data to answer user questions accurately. Keep answers relatively short.
+CRITICAL RULE: When users ask about "pickup locations", "boarding points", or the "route", this strictly refers to the 'routeAreas' array in the activeRides data. You MUST ONLY list the exact locations provided in the 'routeAreas' array for a given ride. You MUST NEVER make up, suggest, or hallucinate outside locations that are not explicitly in the 'routeAreas' array.`;
 
         const model = genAI.getGenerativeModel({ 
-            model: "gemini-2.0-flash",
+            model: "gemini-3.6-flash",
             systemInstruction
         });
 
@@ -55,12 +66,27 @@ exports.handleChat = async (req, res) => {
             history: formattedHistory
         });
 
-        const result = await chat.sendMessage(message);
+        let result;
+        try {
+            result = await chat.sendMessage(message);
+        } catch (apiError) {
+            console.error("Gemini AI API Error:", apiError);
+            return res.status(503).json({ 
+                error: "Chat service is temporarily unavailable. Please try again later." 
+            });
+        }
+        
         const responseText = result.response.text();
 
         res.json({ response: responseText });
     } catch (error) {
-        console.error("Chat API Error:", error);
-        res.status(500).json({ error: "Failed to process chat message." });
+        console.error("Chat API Error Details:");
+        console.error("Message:", error.message);
+        if (error.response) {
+            console.error("Response Data:", error.response.data);
+            console.error("Response Status:", error.response.status);
+        }
+        console.error("Stack:", error.stack);
+        res.status(500).json({ error: "Failed to process chat message.", details: error.message });
     }
 };

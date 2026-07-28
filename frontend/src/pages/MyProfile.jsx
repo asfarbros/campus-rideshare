@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
 import toast from "react-hot-toast";
 
@@ -15,6 +15,15 @@ function MyProfile() {
   const canvasRef = useRef(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [stream, setStream] = useState(null);
+  const streamRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
 
   if (!isLoaded || !user) {
     return <div className="text-center py-20 animate-pulse text-indigo-600 font-bold">Loading Profile...</div>;
@@ -74,6 +83,7 @@ function MyProfile() {
     try {
       const s = await navigator.mediaDevices.getUserMedia({ video: true });
       setStream(s);
+      streamRef.current = s;
       if (videoRef.current) videoRef.current.srcObject = s;
       setIsCameraActive(true);
     } catch (err) {
@@ -89,6 +99,9 @@ function MyProfile() {
     canvas.height = video.videoHeight;
     canvas.getContext("2d").drawImage(video, 0, 0);
     
+    // Turn off camera IMMEDIATELY after snapping picture
+    stopCamera();
+    
     // Convert canvas to blob
     canvas.toBlob(async (blob) => {
       if (!blob) return;
@@ -98,7 +111,6 @@ function MyProfile() {
         await user.setProfileImage({ file });
         toast.dismiss(loadingToast);
         toast.success("Profile picture captured and updated!");
-        stopCamera();
       } catch(err) {
         toast.dismiss();
         toast.error("Failed to upload captured photo");
@@ -110,6 +122,14 @@ function MyProfile() {
     if (stream) {
       stream.getTracks().forEach(track => track.stop());
       setStream(null);
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current && videoRef.current.srcObject) {
+      videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+      videoRef.current.srcObject = null;
     }
     setIsCameraActive(false);
   };

@@ -17,10 +17,13 @@ exports.getRidesByArea = async (req, res) => {
     try {
         const { area } = req.query;
 
+        const todayStr = new Date().toISOString().split("T")[0];
+
         // Using regex to make searching 'tambaram' find 'Tambaram'
         const rides = await Ride.find({
             routeAreas: { $regex: new RegExp(area, 'i') }, 
-            seatsAvailable: { $gt: 0 }
+            seatsAvailable: { $gt: 0 },
+            date: { $gte: todayStr }
         }).populate("driver", "name email"); // Fetches driver name/email from User model
 
         res.json(rides);

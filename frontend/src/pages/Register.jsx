@@ -11,6 +11,15 @@ function Register() {
   
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [stream, setStream] = useState(null);
+  const streamRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -116,6 +125,7 @@ function Register() {
     try {
       const s = await navigator.mediaDevices.getUserMedia({ video: true });
       setStream(s);
+      streamRef.current = s;
       if (videoRef.current) videoRef.current.srcObject = s;
       setIsCameraActive(true);
     } catch (err) {
@@ -130,11 +140,14 @@ function Register() {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     canvas.getContext("2d").drawImage(video, 0, 0);
+
+    // Turn off camera IMMEDIATELY after snapping picture
+    stopCamera();
+
     canvas.toBlob((blob) => {
       if (!blob) return;
       const file = new File([blob], "profile.jpg", { type: "image/jpeg" });
       setPhoto(file);
-      stopCamera();
     }, 'image/jpeg');
   };
 
@@ -142,6 +155,14 @@ function Register() {
     if (stream) {
       stream.getTracks().forEach(track => track.stop());
       setStream(null);
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current && videoRef.current.srcObject) {
+      videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+      videoRef.current.srcObject = null;
     }
     setIsCameraActive(false);
   };
