@@ -67,18 +67,31 @@ CRITICAL RULE: When users ask about "pickup locations", "boarding points", or th
         });
 
         let result;
+        let timeoutId;
         try {
-            result = await chat.sendMessage(message);
+            const timeoutPromise = new Promise((_, reject) => {
+                timeoutId = setTimeout(() => reject(new Error("AI_SERVICE_TIMEOUT")), 15000);
+            });
+
+            result = await Promise.race([
+                chat.sendMessage(message),
+                timeoutPromise
+            ]);
         } catch (apiError) {
             console.error("Gemini AI API Error:", apiError);
+            if (apiError.message === "AI_SERVICE_TIMEOUT") {
+                return res.status(504).json({ error: "AI Service timeout" });
+            }
             return res.status(503).json({ 
                 error: "Chat service is temporarily unavailable. Please try again later." 
             });
+        } finally {
+            clearTimeout(timeoutId);
         }
         
         const responseText = result.response.text();
 
-        res.json({ response: responseText });
+        return res.json({ response: responseText });
     } catch (error) {
         console.error("Chat API Error Details:");
         console.error("Message:", error.message);
@@ -87,6 +100,6 @@ CRITICAL RULE: When users ask about "pickup locations", "boarding points", or th
             console.error("Response Status:", error.response.status);
         }
         console.error("Stack:", error.stack);
-        res.status(500).json({ error: "Failed to process chat message.", details: error.message });
+        return res.status(500).json({ error: "Failed to process chat message.", details: error.message });
     }
 };
