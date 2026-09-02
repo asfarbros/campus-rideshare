@@ -7,12 +7,7 @@ const API = axios.create({
         : "https://campus-rideshare-eiz9.onrender.com/api"
 });
 
-API.interceptors.request.use((req) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-        req.headers.Authorization = token;
-    }
-    return req;
-});
+// Token interception is now handled by ApiSetup component in App.jsx
+// which automatically injects the Clerk session token.
 
 export default API;

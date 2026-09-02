@@ -23,11 +23,9 @@ function Login() {
   const { isSignedIn } = useUser();
 
   useEffect(() => {
-    // If they land on Login but have a valid Clerk session, immediately sync.
-    if (isSignedIn && !localStorage.getItem("token")) {
+    // If they land on Login but have a valid Clerk session, sync and redirect.
+    if (isSignedIn) {
       navigate("/sync-clerk");
-    } else if (isSignedIn && localStorage.getItem("token")) {
-      navigate("/dashboard");
     }
   }, [isSignedIn, navigate]);
 

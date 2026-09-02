@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import { AuthenticateWithRedirectCallback } from "@clerk/clerk-react";
+import { AuthenticateWithRedirectCallback, useAuth } from "@clerk/clerk-react";
+import { useEffect } from "react";
+import API from "./services/api";
 import Navbar from "./components/Navbar";
 import Chatbot from "./components/Chatbot";
 import Login from "./pages/Login";
@@ -20,10 +22,29 @@ import MyRides from "./pages/MyRides";
 import MyPostedRides from "./pages/MyPostedRides";
 import MyProfile from "./pages/MyProfile";
 
+function ApiSetup({ children }) {
+  const { getToken } = useAuth();
+
+  useEffect(() => {
+    const interceptor = API.interceptors.request.use(async (config) => {
+      const token = await getToken();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    });
+
+    return () => API.interceptors.request.eject(interceptor);
+  }, [getToken]);
+
+  return <>{children}</>;
+}
+
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-gradient-to-r from-blue-200 via-indigo-300 to-purple-200 bg-[length:200%_200%] animate-gradient-x flex flex-col">
+      <ApiSetup>
+        <div className="min-h-screen bg-gradient-to-r from-blue-200 via-indigo-300 to-purple-200 bg-[length:200%_200%] animate-gradient-x flex flex-col">
         <Toaster position="top-center" />
         <Navbar />
         <Chatbot />
@@ -55,6 +76,7 @@ function App() {
           </Routes>
         </main>
       </div>
+      </ApiSetup>
     </BrowserRouter>
   );
 }

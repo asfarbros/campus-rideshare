@@ -36,8 +36,8 @@ function SyncClerk() {
         // robustly fallback to ensure we always have a name
         const name = user.fullName || user.firstName || "User";
 
-        const res = await API.post("/auth/clerk-auth", { email, name });
-        localStorage.setItem("token", res.data.token);
+        const res = await API.post("/auth/clerk-auth", { clerkId: user.id, email, name });
+        // Token is now managed securely by Clerk and automatically sent by our API setup.
         toast.success("Authenticated successfully!");
         navigate("/dashboard");
 

@@ -38,7 +38,7 @@ exports.getAllPosts = async (req, res) => {
         }
 
         const posts = await TravelPost.find(filter)
-            .populate("creator", "name")
+            .populate("creator", "name clerkId")
             .sort({ travelDate: 1, createdAt: -1 });
 
         // Attach accepted connection count to each post

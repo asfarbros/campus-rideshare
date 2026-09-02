@@ -54,7 +54,6 @@ function CreateRide() {
     if (
       !form.from ||
       !form.to ||
-      !form.routeAreas ||
       !form.date ||
       !form.time ||
       !form.seatsAvailable
@@ -64,9 +63,16 @@ function CreateRide() {
     }
 
     try {
+      const routeAreasArray = form.routeAreas
+        .split(",")
+        .map((a) => a.trim())
+        .filter(Boolean);
+        
+      const allPickupPoints = Array.from(new Set([form.from, ...routeAreasArray, form.to]));
+
       await API.post("/rides", {
         ...form,
-        routeAreas: form.routeAreas.split(",").map((a) => a.trim()),
+        routeAreas: allPickupPoints,
       });
 
       toast.success("Ride created successfully");
@@ -186,7 +192,7 @@ function CreateRide() {
           {form.routeAreas ? (
             <span className="font-medium text-gray-800">{form.routeAreas}</span>
           ) : (
-            <span className="text-gray-400">Select pickup points / Route areas</span>
+            <span className="text-gray-400">Select intermediate pickup points / Route areas (Optional)</span>
           )}
         </div>
 

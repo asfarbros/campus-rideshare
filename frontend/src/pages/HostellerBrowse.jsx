@@ -1,26 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
 import API from "../services/api";
 import toast from "react-hot-toast";
 
-// Decode JWT to get current user's ID
-function getCurrentUserId() {
-  const token = localStorage.getItem("token");
-  if (!token) return null;
-  try {
-    return JSON.parse(atob(token.split(".")[1])).id;
-  } catch {
-    return null;
-  }
-}
-
 function HostellerBrowse() {
   const navigate = useNavigate();
+  const { user } = useUser();
   const [posts, setPosts] = useState([]);
   const [filters, setFilters] = useState({ destination: "", date: "" });
   const [requestedPostIds, setRequestedPostIds] = useState(new Set());
   const [sendingId, setSendingId] = useState(null);
-  const currentUserId = getCurrentUserId();
 
   const fetchPosts = async (activeFilters = filters) => {
     try {
@@ -67,7 +57,7 @@ function HostellerBrowse() {
     }
   };
 
-  const isOwnPost = (post) => post.creator?._id === currentUserId;
+  const isOwnPost = (post) => post.creator?.clerkId === user?.id;
   const alreadyRequested = (postId) => requestedPostIds.has(postId);
 
   return (

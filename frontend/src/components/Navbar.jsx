@@ -5,9 +5,8 @@ import { useClerk, useUser } from "@clerk/clerk-react";
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const token = localStorage.getItem("token");
   const { signOut } = useClerk();
-  const { user } = useUser();
+  const { user, isSignedIn } = useUser();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -18,9 +17,6 @@ function Navbar() {
   const dropdownRef = useRef(null);
 
   const logout = async () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("profilePic");
     try {
       await signOut();
     } catch (e) {
@@ -86,7 +82,7 @@ function Navbar() {
             </h1>
           </div>
 
-          {token ? (
+          {isSignedIn ? (
             /* CHANGED HERE: Grouped Nav links and Icons into one Right-aligned flex container */
             <div className="flex items-center space-x-2">
               
@@ -218,7 +214,7 @@ function Navbar() {
       </div>
 
       {/* Mobile Menu */}
-      {token && isMobileMenuOpen && (
+      {isSignedIn && isMobileMenuOpen && (
         <div className="md:hidden bg-indigo-700 border-t border-indigo-600">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {navLinks.map((link) => (
