@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 import toast from "react-hot-toast";
+import MapComponent from "../components/MapComponent";
 
 function CreateRide() {
   const navigate = useNavigate();
@@ -112,13 +113,22 @@ function CreateRide() {
     setShowRouteModal(false);
   };
 
+  // Compute places for the map
+  const mapPlaces = [
+    form.from,
+    ...form.routeAreas.split(",").map((s) => s.trim()).filter(Boolean),
+    form.to
+  ].filter(Boolean);
+
   return (
-    <div className="max-w-xl mx-auto mt-10 bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+    <div className="max-w-5xl mx-auto mt-10 bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
       <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center">
         Post a Ride
       </h2>
 
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* FORM LEFT SIDE */}
+        <div className="flex-1 flex flex-col gap-5">
         {/* FROM + TO */}
         <div className="flex flex-col sm:flex-row gap-4">
           {/* FROM */}
@@ -259,6 +269,20 @@ function CreateRide() {
         >
           Post Ride
         </button>
+        </div>
+
+        {/* MAP RIGHT SIDE */}
+        <div className="flex-1 flex flex-col">
+          <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 h-full flex flex-col">
+            <h3 className="text-lg font-bold text-gray-700 mb-3">Live Route Preview</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              As you enter your starting point, destination, and intermediate stops, your route will be plotted here.
+            </p>
+            <div className="flex-1">
+              <MapComponent places={mapPlaces} />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* MODAL OVERLAY */}

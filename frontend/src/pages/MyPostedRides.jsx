@@ -21,7 +21,9 @@ function MyPostedRides() {
 
   const fetchMyPostedRides = async () => {
     try {
+      console.log("Fetching my posted rides...");
       const res = await API.get("/rides/my-posted");
+      console.log("Fetched rides response:", res.data);
       setRides(res.data);
     } catch (error) {
       console.error(error);
@@ -67,9 +69,12 @@ function MyPostedRides() {
           <p className="text-gray-500 text-lg">You haven't posted any rides yet.</p>
         </div>
       ) : (() => {
-        const filteredRides = rides.filter(r => 
-          filterType === "upcoming" ? isUpcoming(r.date, r.time) : !isUpcoming(r.date, r.time)
-        );
+        const filteredRides = rides.filter(r => {
+          const upcoming = filterType === "upcoming" ? isUpcoming(r.date, r.time) : !isUpcoming(r.date, r.time);
+          return upcoming;
+        });
+        
+        console.log("Filtered rides:", filteredRides);
 
         if (filteredRides.length === 0) {
           return (

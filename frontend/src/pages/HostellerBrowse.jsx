@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import API from "../services/api";
 import toast from "react-hot-toast";
 
 function HostellerBrowse() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialDate = searchParams.get("date") || "";
+
   const { user } = useUser();
   const [posts, setPosts] = useState([]);
-  const [filters, setFilters] = useState({ destination: "", date: "" });
+  const [filters, setFilters] = useState({ destination: "", date: initialDate });
   const [requestedPostIds, setRequestedPostIds] = useState(new Set());
   const [sendingId, setSendingId] = useState(null);
 

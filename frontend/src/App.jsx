@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AuthenticateWithRedirectCallback, useAuth } from "@clerk/clerk-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import API from "./services/api";
 import Navbar from "./components/Navbar";
 import Chatbot from "./components/Chatbot";
@@ -17,25 +17,43 @@ import HostellerCreate from "./pages/HostellerCreate";
 import HostellerBrowse from "./pages/HostellerBrowse";
 import HostellerRequests from "./pages/HostellerRequests";
 import HostellerMyPosts from "./pages/HostellerMyPosts";
+import HostellerCalendar from "./pages/HostellerCalendar";
 import SyncClerk from "./pages/SyncClerk";
 import MyRides from "./pages/MyRides";
 import MyPostedRides from "./pages/MyPostedRides";
 import MyProfile from "./pages/MyProfile";
 
 function ApiSetup({ children }) {
-  const { getToken } = useAuth();
+  const { getToken, isLoaded } = useAuth();
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
+    if (!isLoaded) return;
+
     const interceptor = API.interceptors.request.use(async (config) => {
-      const token = await getToken();
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+      try {
+        const token = await getToken();
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      } catch (err) {
+        console.error("Error getting Clerk token:", err);
       }
       return config;
     });
 
+    setIsReady(true);
+
     return () => API.interceptors.request.eject(interceptor);
-  }, [getToken]);
+  }, [getToken, isLoaded]);
+
+  if (!isReady) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-indigo-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
 
   return <>{children}</>;
 }
@@ -73,6 +91,7 @@ function App() {
             <Route path="/hosteller/browse" element={<HostellerBrowse />} />
             <Route path="/hosteller/requests" element={<HostellerRequests />} />
             <Route path="/hosteller/my-posts" element={<HostellerMyPosts />} />
+            <Route path="/hosteller/calendar" element={<HostellerCalendar />} />
           </Routes>
         </main>
       </div>

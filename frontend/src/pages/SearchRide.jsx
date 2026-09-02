@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import API from "../services/api";
+import MapComponent from "../components/MapComponent";
 
 function SearchRide() {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ function SearchRide() {
   const [rides, setRides] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
+  const [selectedMapRide, setSelectedMapRide] = useState(null);
   const timeoutRef = useRef(null);
 
   const fetchLocations = async (query) => {
@@ -149,12 +151,39 @@ function SearchRide() {
               </div>
             </div>
 
-            <button onClick={() => requestRide(r._id)} className="mt-2 w-full bg-indigo-600 text-white font-bold px-4 py-3 rounded-xl hover:bg-indigo-700 transition duration-300 shadow-md">
-              Request Ride
-            </button>
+            <div className="flex gap-3 mt-2">
+              <button onClick={() => setSelectedMapRide(r)} className="w-1/3 bg-gray-100 text-indigo-600 font-bold px-4 py-3 rounded-xl hover:bg-gray-200 transition duration-300 shadow-sm border border-gray-200">
+                View Route
+              </button>
+              <button onClick={() => requestRide(r._id)} className="w-2/3 bg-indigo-600 text-white font-bold px-4 py-3 rounded-xl hover:bg-indigo-700 transition duration-300 shadow-md">
+                Request Ride
+              </button>
+            </div>
           </div>
         ))}
       </div>
+
+      {/* MAP MODAL */}
+      {selectedMapRide && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col">
+            <div className="p-4 border-b flex justify-between items-center bg-gray-50">
+              <h3 className="font-bold text-lg text-gray-800">
+                Route: {selectedMapRide.from} → {selectedMapRide.to}
+              </h3>
+              <button 
+                onClick={() => setSelectedMapRide(null)}
+                className="text-gray-500 hover:bg-gray-200 p-2 rounded-full transition"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-4">
+              <MapComponent places={selectedMapRide.routeAreas || [selectedMapRide.from, selectedMapRide.to]} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

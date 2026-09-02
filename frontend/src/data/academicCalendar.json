@@ -1,0 +1,54 @@
+{
+  "academicYear": "2026-2027",
+  "holidays": [
+    { "date": "2026-08-15", "name": "Independence Day", "type": "holiday" },
+    { "date": "2026-08-26", "name": "Miladi Nabi", "type": "holiday" },
+    { "date": "2026-09-14", "name": "Sri Ganesh Chaturthi", "type": "holiday" },
+    { "date": "2026-10-02", "name": "Gandhi Jayanthi", "type": "holiday" },
+    { "date": "2026-10-19", "name": "Ayudha Pooja", "type": "holiday" },
+    { "date": "2026-10-20", "name": "Vijaya Dasami", "type": "holiday" },
+    { "date": "2026-11-08", "name": "Deepavali", "type": "holiday" },
+    { "date": "2026-11-09", "name": "Additional Deepavali Holiday", "type": "holiday" },
+    { "date": "2026-12-25", "name": "Christmas", "type": "holiday" },
+    { "date": "2027-01-01", "name": "New Year", "type": "holiday" },
+    { "date": "2027-01-14", "name": "Bhogi", "type": "holiday" },
+    { "date": "2027-01-15", "name": "Pongal", "type": "holiday" },
+    { "date": "2027-01-16", "name": "Thiruvalluvar Day", "type": "holiday" },
+    { "date": "2027-01-26", "name": "Republic Day", "type": "holiday" },
+    { "date": "2027-03-09", "name": "Ramzan", "type": "holiday" },
+    { "date": "2027-03-26", "name": "Good Friday", "type": "holiday" },
+    { "date": "2027-04-14", "name": "Tamil New Year", "type": "holiday" },
+    { "date": "2027-05-01", "name": "May Day", "type": "holiday" }
+  ],
+  "exams": [
+    {
+      "name": "CAT-1",
+      "startDate": "2026-08-04",
+      "endDate": "2026-08-12",
+      "type": "exam"
+    },
+    {
+      "name": "CAT-2",
+      "startDate": "2026-09-29",
+      "endDate": "2026-10-07",
+      "type": "exam"
+    },
+    {
+      "name": "End Semester Practicals",
+      "startDate": "2026-10-23",
+      "endDate": "2026-10-29",
+      "type": "exam"
+    },
+    {
+      "name": "End Semester Theory Starts",
+      "startDate": "2026-11-04",
+      "endDate": "2026-12-10",
+      "type": "exam"
+    }
+  ],
+  "milestones": [
+    { "date": "2026-06-22", "name": "Commencement of Classes", "type": "milestone" },
+    { "date": "2026-10-22", "name": "Last Working Day (Odd Sem)", "type": "milestone" },
+    { "date": "2026-12-14", "name": "Re-opening for Even Semester", "type": "milestone" }
+  ]
+}

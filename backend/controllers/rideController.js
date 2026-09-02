@@ -34,7 +34,9 @@ exports.getRidesByArea = async (req, res) => {
 
 exports.getMyPostedRides = async (req, res) => {
     try {
+        console.log("getMyPostedRides called for user:", req.user);
         const rides = await Ride.find({ driver: req.user }).lean().sort({ createdAt: -1 });
+        console.log(`Found ${rides.length} posted rides for user ${req.user}`);
         
         const rideIds = rides.map(r => r._id);
         const acceptedRequests = await RideRequest.find({
